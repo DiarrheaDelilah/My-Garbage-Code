@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+c = 2
+a = 25214903917
+M = 2**48
+r0 = 0
+initial = []
+r_list = []
+counter = 0
+for i in range(101):
+    counter += 1
+    initial.append(r0)
+    r0 = ((a*r0) + c)%M
+    r_list.append(r0/M)
+
+plt.scatter(initial, r_list)
+
+from numpy.random import random, seed
+
+value = sum(random((21,10)))**2
+average = sum(value)/len(value)
+print(value, average)
+
+from random import randint
+def new_rand_wlk(nsteps, theta):
+    """
+    randon walk
+    theta = 1 till make squares
+    others will make funny
+    """
+    x = np.zeros(nsteps)
+    y = np.zeros(nsteps)
+    for i in range(1, nsteps):
+        move = randint(1,4)
+        if move == 1:
+            x[i] = x[i - 1] + np.cos(theta)
+            y[i] = y[i - 1] + np.sin(theta)
+        elif move == 2:
+            x[i] = x[i - 1] - np.cos(theta)
+            y[i] = y[i - 1] - np.sin(theta)
+        elif move == 3:
+            x[i] = x[i - 1] - np.cos(theta)
+            y[i] = y[i - 1] + np.sin(theta)
+        elif move == 4:
+            x[i] = x[i - 1] + np.cos(theta)
+            y[i] = y[i - 1] - np.sin(theta)
+    plt.plot(x*np.cos(theta),y*np.sin(theta))
+#    return x, y
+new_rand_wlk(1000,2*np.pi/3)#120 degrees should does it at a funny angle
+
+new_rand_wlk(100000, 2*np.pi/3)
