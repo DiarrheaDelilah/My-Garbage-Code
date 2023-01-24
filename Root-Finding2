@@ -1,0 +1,27 @@
+def newton_step(f, fp, x0):
+    """Perform one step of the Newton-Raphson algorithm."""
+    for num in range(0,100):
+        x0 = x0 - f(x0) / fp(x0)
+    return x0
+def f(x):
+    return (x**2) - 4
+def fp(x):
+    return 2*x
+newton_step(f,fp,10)
+
+Nitermax = 35     # maximum number of iterations
+epsilon = 1.0e-8    # convergence parameter - the accuracy of the root in x
+def NEWton_step(f, fp, x0):
+    list0 = []
+    for num in range(0,100):
+        x0 = x0 - f(x0) / fp(x0)
+        list0.append(1)
+        if (len(list0) + 1) > Nitermax:
+            break
+    return x0, len(list0)
+def f(x):
+    return (x**2) - 2
+def fp(x):
+    return 2*x
+NEWton_step(f,fp,10)
+
