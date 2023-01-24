@@ -1,0 +1,60 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy import ones, array, empty, zeros
+%matplotlib inline
+
+t = np.linspace(0,15,1000)
+omega_sq = 1 # omega being k / m
+y = [0,2] #y[0] =  and y[1] = v
+# second number controlls amd
+def harmonic(t,y):
+    return [y[1], -omega_sq * y[0]]
+
+HarmO = solve_ivp(harmonic, [0,1000], y0 = y, t_eval = t)
+plt.plot(HarmO.t, HarmO.y[0]) # pog
+
+plt.plot(t,HarmO.y[0])
+plt.plot(t,HarmO.y[1])
+plt.ylabel("Position")
+plt.xlabel("Time")
+plt.title('SHO', fontsize = 20)
+
+def derivative_harmonic(t, x):
+    x0, x1 = x
+    dx0 = x1
+    dx1 = -(x0 * k) / m
+    return np.array((dx0, dx1))
+t_total = 10
+dt = 0.1
+t = 0
+x = np.array((1., 0))
+v = derivative_harmonic(t, x)
+
+t_list = [t]
+x_list = [x.copy()]
+v_list = [v.copy()]
+V = []
+
+for i in range(int(t_total / dt)):
+    t += dt
+    x += derivative_harmonic(t, x) * dt
+    v = derivative_harmonic(t, x)
+    t_list.append(t)
+    x_list.append(x.copy())
+    v_list.append(v.copy())
+
+for i in range(int(t_total / dt)+1):#V
+    V.append(0.5*k*(i**2))
+
+t_list = np.array(t_list)
+x_list = np.array(x_list)
+plt.figure()
+plt.subplot(2, 1, 1)
+plt.plot(t_list, x_list[:,0], label="$x$")
+plt.plot(t_list, x_list[:,1], label='$\\mathrm{d}x/\\mathrm{d}t$')
+#plt.legend()
+#plt.subplot(2, 1, 2)
+#plt.plot(t_list, V, label="$V$")
+#plt.plot(t_list, ..., label="$K$")
+#plt.plot(t_list, ..., label="$E$")
+#plt.legend()
