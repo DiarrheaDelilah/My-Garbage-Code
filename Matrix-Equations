@@ -1,0 +1,23 @@
+import numpy as np
+def coefficient_matrix(x, k):
+    """a square matrix in which each / diagonal is increased by *x"""
+    coeff = np.empty([k + 1, k + 1]) # empty matrix, k x k
+    for num in range(k + 1):
+        for mun in range(k + 1):
+            coeff[num, mun ] = sum(x ** (mun + num))
+    return coeff
+
+def constant_matrix(x, y, k):
+    """a 1 column matrix where it increases y by x^k starting with x^0"""
+    constant = np.empty([k + 1, 1]) # empty matrix, k rows, 1 column
+    for i in range(k + 1):
+        constant[i] = sum((x ** (i)) * y)
+    return constant
+
+def chi_squared(x, y, coefficients):
+    """sum of the difference between the fitted and actual values of y, squared, all over k + 1."""
+    top = sum((y_fitted(x, coefficients) - y) ** 2)
+    bottom = coefficients.size + 1 # number of degrees of freedom
+    chi_squared = top / bottom
+    return chi_squared
+
