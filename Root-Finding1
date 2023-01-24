@@ -1,0 +1,43 @@
+from math import sqrt
+def find_roots(a,b,c):
+    discriminant = b**2 - 4*a*c
+    m = (l + u)/2
+    if discriminant == 0:
+        roots = (-b + sqrt(b**2 - 4*a*c)) / 2*a
+        print(roots)
+    elif discriminant < 0:
+        print("NA")
+    elif discriminant > 0:
+        root1 = (-b + sqrt(b**2 - 4*a*c)) / 2*a
+        root2 = (-b - sqrt(b**2 - 4*a*c)) / 2*a
+        print(root1)
+        print(root2)
+    if int(l) < root2 < int(m):
+        print("root in lower bound")
+    if int(m) < root1 < int(u):
+        print("root in upper bound")
+#find_roots(1,0,-4)
+
+bounds = -5, 5
+def range_find(f,bounds):
+    if int(l) < root2 < int(m):
+        print("root in lower bound")
+    if int(m) < root1 < int(u):
+        print("root in upper bound")
+        
+def bisection_step(f, bounds):
+    """Performs one step of the bisection algorithm to locate a root of f,
+    and returns a smaller range in which the root is found.
+
+    f: function of a single variable with a root within bounds
+    bounds: tuple of two numbers representing the range to search for the root"""
+
+    l, u = bounds      # "Unpack" the tuple so that we can manipulate the lower and upper bound separately
+    m = (l + u)/2 # Calculate the midpoint
+
+    if l * u < 0: # We want this code to run if f(l) and f(m) have opposite signs. Fill in the condition here
+        return (l, m)
+    else:
+        return (m, u) # Fill in an appropriate return value here if the condition is false
+    
+    
