@@ -1,0 +1,26 @@
+def FD(f, x, h):
+    """Just the first principle"""
+    f_prime = (float(f(x + h)) - float(f(x))) / h
+    return f_prime
+    # Your code goes here
+def f(x):
+    return 2*(x**2)
+FD(f,3,0.0001)
+
+from numpy import cos
+def g(x):
+    return cos(x)
+for i in range(1,8):# code iterates from 1 to 7
+    h = 10**(-i)
+    print(FD(g,0,h))
+ 
+def CD(f, x, h):
+    H = 0.5*h
+    CD_result = (float(f(x + H)) - float(f(x - H))) / h
+    return CD_result
+CD(f,3,0.0001)
+
+def ED(f,x,h):
+    f_again = (1/3)*(4*CD(f, x, 0.5*h) - CD(f, x, h))
+    return f_again
+ED(f,3,0.0001)
