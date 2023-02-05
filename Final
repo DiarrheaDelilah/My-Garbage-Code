@@ -1,0 +1,522 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+from numpy.linalg import eig
+from mpl_toolkits.mplot3d import Axes3D
+"""
+ok so
+
+first step: write a function that solves the TISE or even possibly the TDSE ( if it proves to be more useful)
+second step: see how it applies to the different square wells
+third step: potential barrier compatability
+fourth sterp(?): hopefully ill get to trying this in 3D for the H atom and possibly graphing it out
+"""
+"""
+first, Schrodinger's Equation
+"""
+hbar = 1.05e-34
+
+m = 9.11e-31 # any mass could do but e- are fun
+
+dx = 1.0e-6 # needed for the der_odr_2 function to work
+# citations needed for both of these?
+
+"""
+so far:
+
+E psi = M psi
+
+where M is the matrix operator:
+
+(- hbar^2 / 2m)(d^2 / dx^2) + V(x)
+"""
+def potential(x):
+    """
+    is the function for the potential in the system
+    """
+    return x
+# whats left to find is (- hbar^2 / 2m)(d^2 / dx^2)
+# second order first principle??? # + citation
+# found :)
+"""A. Zygmund (2002). Trigonometric Series. Cambridge University Press. pp. 22–23."""
+
+def der_odr_2(f,x):
+    """
+    second order derivative finder
+    returns a value for tat specific x
+    """
+    return (f(x + dx) - 2*f(x) + f(x - dx)) / dx**2
+# how can i turn this into a matrix?
+"""
+ok so
+rn
+
+make M a matrix that does its thing in a d x d matrix
+where d will be the dimention of the matrix, and the amount of eigenvalues i get for E
+"""
+"""
+first, Schrodinger's Equation
+"""
+hbar = 1.05e-34
+
+m = 9.11e-31 # any mass could do but e- are fun
+
+dx = 1.0e-6 # needed for the der_odr_2 function to work
+# citations needed for both of these?
+
+"""
+so far:
+
+E psi = M psi
+
+where M is the matrix operator:
+
+(- hbar^2 / 2m)(d^2 / dx^2) + V(x)
+
+"""
+def potential(x):
+    """
+    is the function for the potential in the system
+    """
+    return x
+# whats left to find is (- hbar^2 / 2m)(d^2 / dx^2)
+# second order first principle??? # + citation
+# found :)
+"""A. Zygmund (2002). Trigonometric Series. Cambridge University Press. pp. 22–23."""
+
+def der_odr_2(f,x):
+    """
+    second order derivative finder
+    returns a value for tat specific x
+    """
+    return (f(x + dx) - 2*f(x) + f(x - dx)) / dx**2
+# how can i turn this into a matrix?
+
+"""
+ok so
+rn
+
+make M a matrix that does its thing in a d x d matrix
+where d will be the dimention of the matrix, and the amount of eigenvalues i get for E
+
+"""
+# making of matrix M, recycling code from lab 7
+
+def making_M(k):
+    """a square matrix in which each / diagonal is increased by *x"""
+    empty_array = np.zeros([k, k]) # empty matrix, k x k
+    for num in range(k):
+        for mun in range(k):
+            if num == mun:
+                empty_array[num, num] = -2
+            elif num == mun + 1:
+                empty_array[num, mun + 1] = 1
+            elif num + 1 == mun:
+                empty_array[num + 1, mun] = 1
+            else:
+                empty_array[num, mun] = 0
+    return empty_array
+
+making_M(3)
+
+"""
+manually made a matrix to see if the solve_ivp w/ it inside worked
+"""
+
+newM = np.zeros([3, 3])
+newM[0, 0] = -2
+newM[1, 1] = -2
+newM[2, 2] = -2
+newM[0, 1] = 1
+newM[1, 2] = 1
+newM[1, 0] = 1
+newM[2, 1] = 1
+
+print(newM)
+
+"""
+http://hplgit.github.io/num-methods-for-PDEs/doc/pub/diffu/html/slides_diffu-solarized.html
+"""
+#equation below found here
+
+# ingonre if previous code cell works
+def make_M(N):
+    A = np.zeros((N, N))
+    for i in range(1, N-1):
+        A[i,i-1] = -1
+        A[i,i+1] = -1
+        A[i,i] = -2
+    A[0,0] = A[N,N] = 1
+#print(make_M(3))
+DeAr = newM/(dx**2)
+
+"""
+this code was supposed to make a tri diagonal matrix (17)(Hans Peter Langtangen) but it didnt
+-assuming this code will work and i wont have to find some other way to make it-
+im going to carry on for a bit
+"""
+
+# broken code dont touch
+"""
+
+V = 1.0e-19
+E = 13.6e-19 # ground state for e- in H
+# y0 = np.sqrt(2) * np.sin(np.pi * x)
+L = 1.0e-2
+E1 = (np.pi**2) * (hbar**2) / (m * (L**2))
+
+def der_psi2(t, psi):
+    x0, x1 = psi
+    dx0 = x1
+    x2 = (np.sqrt(2 / L) * np.cos(np.pi * x0 / L) + np.sqrt(2) * np.sin(np.pi * x0)) * np.exp(-1j * t *E1 / hbar)
+    dx1 = -(2*m)/(hbar**2) * (V - E) * x2
+    return np.array((dx0, dx1))
+
+solve2 = solve_ivp(der_psi2, (-0, L), y0 = [0, 0], t_eval = np.linspace(-0, L, 100))
+
+plt.plot(solve2.t, solve2.y[0])
+plt.plot(solve2.t, solve2.y[1])
+
+it sortof works?
+find the propper values for t0 and y0
+
+"""
+# broken code dont touch
+"""
+
+V = 1.0e-19
+E = 13.6e-19 # ground state for e- in H
+# y0 = np.sqrt(2) * np.sin(np.pi * x)
+L = 1.0e-2
+E1 = (np.pi**2) * (hbar**2) / (m * (L**2))
+
+def der_psi2(t, psi):
+    x0, x1 = psi
+    dx0 = x1
+    x2 = (np.sqrt(2 / L) * np.cos(np.pi * x0 / L) + np.sqrt(2) * np.sin(np.pi * x0)) * np.exp(-1j * t *E1 / hbar)
+    dx1 = -(2*m)/(hbar**2) * (V - E) * x2
+    return np.array((dx0, dx1))
+
+solve2 = solve_ivp(der_psi2, (-0, L), y0 = [0, 0], t_eval = np.linspace(-0, L, 100))
+
+plt.plot(solve2.t, solve2.y[0])
+plt.plot(solve2.t, solve2.y[1])
+
+it sortof works?
+find the propper values for t0 and y0
+"""
+
+def der_psi0(t, psi):
+    return -1j * (-0.5 * (hbar / m) * DeAr.dot(psi) + 0 * psi / hbar)
+
+solve = solve_ivp(der_psi0, (0, 1), y0 = [1.0e-19, 0, 0], t_eval = np.linspace(0, 1, 100))
+"""
+some values need to be filled in to make the solve work
+-> figure out what these should be
+"""
+# try a time interval 0 to 1 ?
+# initial y0 = 0? or 1?
+plt.plot(solve.t, solve.y[0])
+plt.plot(solve.t, solve.y[1])
+
+"""
+defining the actual x values should help for new stuff # it starts to wrok around here
+"""
+
+N = 100 # size of "grid" in linspace
+x = np.linspace(-1, 1, N)
+h = x[1] - x[0]
+
+# making M matrix from before but again
+Der_Mat = np.zeros((N)**2).reshape(N,N)
+for i in range(N):
+    for j in range(N):
+        if i == j:
+            Der_Mat[i, j] = -2
+        elif abs(i - j) == 1: # if difference between the two indexes is one (either side of the main diagonal)
+            Der_Mat[i, j] = 1
+        else:
+            Der_Mat[i, j] = 0
+print(Der_Mat)
+print(Der_Mat.size)
+# ok
+# can make matrice
+
+# oops
+"""
+so
+Hamiltonian has to be a matrix
+so the potential energy has to be a matrix too
+otherwise the "hamiltonian" will be a matrix + a value
+"""
+# :(((((
+
+V_mat = np.zeros((N)**2).reshape(N,N)
+for o in range(N):
+    for p in range(N):
+        if o == p:
+            V_mat[o, p] = potential(x[o]) # potential changes # almost oscillates
+        else:
+            V_mat[o, p] = 0
+print(V_mat)
+print(V_mat.size)
+# represents potential at every "step" on the grid
+# has to be on the diagonal, theres a correletion between the index ("lowest" list later on) and the dimention the potential is in
+"""
+weird 0 potential value for 1,1
+ill fix later on if it becomes an issue
+"""
+
+# the hamiltonian itself
+Hamilt = - (Der_Mat) / (2 * (h**2)) + V_mat
+print(Hamilt)
+
+"""
+looks a bit funky
+solve eigenvalues?
+"""
+eigenvalues, eigenvectors = eig(Hamilt)
+print(eigenvalues)
+# i mean. it is 100 x 100. idk what to to with these specifically
+
+print(eigenvectors)
+
+"""
+plotting all of them would be a waste of time
+argsort should give four lowest
+"""
+lower = np.argsort(eigenvectors) # sorts, returns a list of their rank lowest ti highest
+print(lower)
+lowest = lower[0:4] # picks out first 4
+print(lowest)
+
+#
+N = 100
+x = np.linspace(-1, 1, N)
+h = x[1] - x[0]
+
+lower = np.argsort(eigenvalues)
+lowest = lower[0:4]
+
+plt.figure(figsize=(20,6)) # to make it take up less space in the report
+#
+"""
+for whatever reason i lost the stuff in between the two hash-es so like sorry if i lost my notes :(
+"""
+for i in range(len(lowest)):
+    y = []
+    y = np.append(y,eigenvectors[:, lowest[i]])
+    plt.plot(x, y, lw = 3, label="#{} level".format(i))
+plt.legend()
+
+"""
+trying to figure out 3d plotting with:
+https://jakevdp.github.io/PythonDataScienceHandbook/04.12-three-dimensional-plotting.html
+
+to show a x and y axis with potential
+"""
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+h = x[1] - x[0] # since y and x are the same idc
+
+X, Y = np.meshgrid(x, y)
+
+V_mat2 = np.zeros((N)**2).reshape(N,N)
+
+for o in range(N):
+    for p in range(N):
+        if o == p:
+            V_mat2[o, p] = potential(x[o]**2)
+        else:
+            V_mat2[o, p] = 0
+#print(V_mat2)
+Hamilt = - (Der_Mat) / (2 * (h**2)) + V_mat
+eigenvalues, eigenvectors = eig(Hamilt)
+
+lower = np.argsort(eigenvalues)
+lowest = lower[0:4]
+
+"""
+turn the whole process into function (?)
+to follow the process in the github tutorial
+"""
+y1 = np.append(y,eigenvectors[:, lowest[1]]) # pick out two different wave functions to see what the sum of them looks like ig
+x1 = np.append(y,eigenvectors[:, lowest[1]])
+
+X, Y = np.meshgrid(x, y)
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+h = x[1] - x[0] # since x and y are the same, to kepp it shrimple, just use x
+yl = []
+yl = np.append(y,eigenvectors[:, lowest[0]]) # makes list of first eigenvector
+yl = yl[100:]
+xl = []
+xl = np.append(x,eigenvectors[:, lowest[0]]) # varie whats inside lowest[...] to see different functions together
+xl = xl[100:]
+
+X, Y = np.meshgrid(x, y)
+"""
+revelation
+plot x against y against Z
+with Z being the sum of the of the two eigenvectors
+"""
+# made with help from lab 12
+#print(xl, yl)
+
+k = len(xl)
+Z = np.empty([k, k]) # empty matrix, k x k
+for num in range(k):
+    for mun in range(k):
+        Z[num, mun ] = xl[num] + yl[mun]
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+X, Y = np.meshgrid(x, y)
+
+#print(Z)
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.plot_wireframe(X, Y, Z, color='black')
+ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='magma', edgecolor='none')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel("potential")
+
+"""
+that did something
+lets copy it and make it do something nice
+"""
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+h = x[1] - x[0]
+yl = []
+yl = np.append(y,eigenvectors[:, lowest[1]])
+yl = yl[100:]
+xl = []
+xl = np.append(x,eigenvectors[:, lowest[1]])
+xl = xl[100:]
+
+X, Y = np.meshgrid(x, y)
+
+k = len(xl)
+Z = np.empty([k, k])
+for num in range(k):
+    for mun in range(k):
+        Z[num, mun ] = xl[num] + yl[mun]
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+X, Y = np.meshgrid(x, y)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.plot_wireframe(X, Y, Z, color='black')
+ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='magma', edgecolor='none')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel("potential")
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+h = x[1] - x[0]
+yl = []
+yl = np.append(y,eigenvectors[:, lowest[2]])
+yl = yl[100:]
+xl = []
+xl = np.append(x,eigenvectors[:, lowest[2]])
+xl = xl[100:]
+
+X, Y = np.meshgrid(x, y)
+
+k = len(xl)
+Z = np.empty([k, k])
+for num in range(k):
+    for mun in range(k):
+        Z[num, mun ] = xl[num] + yl[mun]
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+X, Y = np.meshgrid(x, y)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.plot_wireframe(X, Y, Z, color='black')
+ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='magma', edgecolor='none')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel("potential")
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+h = x[1] - x[0]
+yl = []
+yl = np.append(y,eigenvectors[:, lowest[3]])
+yl = yl[100:]
+xl = []
+xl = np.append(x,eigenvectors[:, lowest[3]])
+xl = xl[100:]
+
+X, Y = np.meshgrid(x, y)
+
+k = len(xl)
+Z = np.empty([k, k])
+for num in range(k):
+    for mun in range(k):
+        Z[num, mun ] = xl[num] + yl[mun]
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+X, Y = np.meshgrid(x, y)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.plot_wireframe(X, Y, Z, color='black')
+ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='magma', edgecolor='none')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel("potential")
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+h = x[1] - x[0]
+yl = []
+yl = np.append(y,eigenvectors[:, lowest[3]])
+yl = yl[100:]
+xl = []
+xl = np.append(x,eigenvectors[:, lowest[3]])
+xl = xl[100:]
+
+X, Y = np.meshgrid(x, y)
+
+k = len(xl)
+Z = np.empty([k, k])
+for num in range(k):
+    for mun in range(k):
+        Z[num, mun ] = xl[num] + yl[mun]
+
+N = 100
+x = np.linspace(-1, 1, N)
+y = np.linspace(-1, 1, N)
+X, Y = np.meshgrid(x, y)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.plot_wireframe(X, Y, Z, color='black')
+ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='magma', edgecolor='none')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel("potential")
